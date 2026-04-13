@@ -45,14 +45,30 @@ jobs:
         cd qg-native
         cl.exe /EHsc main.cpp /Fe:qg-native.exe user32.lib advapi32.lib iphlpapi.lib ws2_32.lib psapi.lib
 
-    # 6. Build Go API
+    # 6. Build Go API & Rename for Sidecar
     - name: Build Go API
       run: |
         cd qg-api
         go mod tidy
         go build -o qg-api.exe main.go
+        mkdir -p ../qg-desktop/src-tauri/bin
+        copy qg-api.exe ../qg-desktop/src-tauri/bin/qg-api-x86_64-pc-windows-msvc.exe
 
-    # 7. Build React UI
+    # 7. Build Rust Scanner & Rename for Sidecar
+    - name: Build Rust Scanner
+      run: |
+        cd qg-scanner
+        cargo build --release
+        copy target\release\qg-scanner.exe ..\qg-desktop\src-tauri\bin\qg-scanner-x86_64-pc-windows-msvc.exe
+
+    # 8. Build C++ Native Bridge & Rename for Sidecar
+    - name: Build C++ Native Bridge
+      run: |
+        cd qg-native
+        cl.exe /EHsc main.cpp /Fe:qg-native-x86_64-pc-windows-msvc.exe user32.lib advapi32.lib iphlpapi.lib ws2_32.lib psapi.lib
+        copy qg-native-x86_64-pc-windows-msvc.exe ..\qg-desktop\src-tauri\bin\
+
+    # 9. Build React UI
     - name: Build React UI
       run: |
         cd qg-ui
@@ -60,20 +76,22 @@ jobs:
         $env:CI = "false"
         npm run build
 
-    # 8. Collect Binaries to Root (No Folders)
-    - name: Collect Binaries
-      run: |
-        copy qg-scanner\target\release\qg-scanner.exe .\
-        copy qg-native\qg-native.exe .\
-        copy qg-api\qg-api.exe .\
+    # 10. Build Tauri Desktop Bundle
+    - name: Build Tauri Desktop
+      uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        projectPath: qg-desktop
+        tagName: v__VERSION__
+        releaseName: "QuantumGuard Sentinel v__VERSION__"
+        releaseBody: "Automated Polyglot Sentinel Build"
+        releaseDraft: true
+        prerelease: false
 
-    # 9. Archive Artifacts
-    - name: Upload Sentinel Suite
+    # 11. Archive Finished Installer
+    - name: Upload Installer
       uses: actions/upload-artifact@v4
       with:
-        name: QuantumGuard-Sentinel-Suite
-        path: |
-          qg-scanner.exe
-          qg-native.exe
-          qg-api.exe
-          qg-ui/dist/
+        name: QuantumGuard-Final-Installer
+        path: qg-desktop/src-tauri/target/release/bundle/msi/*.msi
