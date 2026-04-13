@@ -27,13 +27,6 @@
         "bin/qg-scanner",
         "bin/qg-native"
       ],
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
       "identifier": "com.quantumguard.sentinel",
       "longDescription": "",
       "shortDescription": ""
@@ -48,7 +41,6 @@
         "resizable": true,
         "title": "QuantumGuard Polyglot Sentinel",
         "width": 1080,
-        "transparent": true,
         "decorations": true
       }
     ]
