@@ -1,0 +1,66 @@
+name: QuantumGuard Polyglot Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    # 1. Setup Rust
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+    
+    # 2. Setup Go
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.21'
+
+    # 3. Setup Node.js (for React)
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    # 4. Build Rust Scanner
+    - name: Build Rust Scanner
+      run: |
+        cd qg-scanner
+        cargo build --release
+
+    # 5. Build C++ Native Bridge
+    - name: Build C++ Native Bridge
+      run: |
+        cd qg-native
+        cl.exe /EHsc main.cpp /Fe:qg-native.exe user32.lib advapi32.lib iphlpapi.lib ws2_32.lib psapi.lib
+
+    # 6. Build Go API
+    - name: Build Go API
+      run: |
+        cd qg-api
+        go build -o qg-api.exe main.go
+
+    # 7. Build React UI
+    - name: Build React UI
+      run: |
+        cd qg-ui
+        npm install
+        npm run build
+
+    # 8. Archive Artifacts
+    - name: Upload Sentinel Suite
+      uses: actions/upload-artifact@v4
+      with:
+        name: QuantumGuard-Sentinel-Suite
+        path: |
+          qg-scanner/target/release/qg-scanner.exe
+          qg-native/qg-native.exe
+          qg-api/qg-api.exe
+          qg-ui/dist/
