@@ -4,7 +4,6 @@
 )]
 
 use tauri::Manager;
-use tauri::api::process::{Command, CommandEvent};
 
 fn main() {
     tauri::Builder::default()
