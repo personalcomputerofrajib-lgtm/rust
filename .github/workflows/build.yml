@@ -60,13 +60,20 @@ jobs:
         $env:CI = "false"
         npm run build
 
-    # 8. Archive Artifacts
+    # 8. Collect Binaries to Root (No Folders)
+    - name: Collect Binaries
+      run: |
+        copy qg-scanner\target\release\qg-scanner.exe .\
+        copy qg-native\qg-native.exe .\
+        copy qg-api\qg-api.exe .\
+
+    # 9. Archive Artifacts
     - name: Upload Sentinel Suite
       uses: actions/upload-artifact@v4
       with:
         name: QuantumGuard-Sentinel-Suite
         path: |
-          qg-scanner/target/release/qg-scanner.exe
-          qg-native/qg-native.exe
-          qg-api/qg-api.exe
+          qg-scanner.exe
+          qg-native.exe
+          qg-api.exe
           qg-ui/dist/
