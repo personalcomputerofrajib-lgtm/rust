@@ -1,3 +1,10 @@
+use walkdir::WalkDir;
+use rayon::prelude::*;
+use serde::{Serialize, Deserialize};
+use std::path::{Path, PathBuf};
+use std::time::Instant;
+use std::fs;
+
 #[derive(Serialize, Deserialize, Debug)]
 struct ScanResult {
     path: String,
