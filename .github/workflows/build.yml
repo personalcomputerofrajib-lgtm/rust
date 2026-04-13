@@ -83,8 +83,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         projectPath: qg-desktop
-        tagName: v__VERSION__
-        releaseName: "QuantumGuard Sentinel v__VERSION__"
+        tagName: v1.0.0
+        releaseName: "QuantumGuard Sentinel v1.0.0"
         releaseBody: "Automated Polyglot Sentinel Build"
         releaseDraft: true
         prerelease: false
