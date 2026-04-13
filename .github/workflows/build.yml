@@ -49,6 +49,7 @@ jobs:
     - name: Build Go API
       run: |
         cd qg-api
+        go mod tidy
         go build -o qg-api.exe main.go
 
     # 7. Build React UI
@@ -56,6 +57,7 @@ jobs:
       run: |
         cd qg-ui
         npm install
+        $env:CI = "false"
         npm run build
 
     # 8. Archive Artifacts
